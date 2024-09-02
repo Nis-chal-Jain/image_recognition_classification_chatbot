@@ -56,7 +56,7 @@ function App() {
 
     try {
       setLoading(true);
-      setResponse((prev) => [...prev, `Qes:${value}`]);
+      setResponse((prev) => [...prev, `Qes: ${value}`]);
       const options = {
         method: "POST",
         body: JSON.stringify({
@@ -73,7 +73,8 @@ function App() {
         options
       );
       const data = await response.text();
-      setResponse((prev) => [...prev, `Ans:${data}`]);
+      setResponse((prev) => [...prev, `Ans: ${data}`]);
+      setValue("")
     } catch (error) {
       console.error(error);
       setError("Something went Wrong!!!");
