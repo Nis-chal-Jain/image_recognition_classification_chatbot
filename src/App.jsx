@@ -1,78 +1,219 @@
-import { useEffect, useState } from "react";
-import "./App.css";
-import fs from "fs";
+import React, { useState, useEffect } from "react";
+import sampleImage from "./image.jpg";
+import { RxCrossCircled } from "react-icons/rx";
+import ReactMarkdown from "react-markdown";
+import { BounceLoader } from "react-spinners";
 
 function App() {
-  const [img, setimg] = useState("");
-  const [ans1, setans1] = useState("");
-  const [ans2, setans2] = useState("");
-  const [ans3, setans3] = useState("");
-  const [fileContent, setFileContent] = useState("");
+  const [image, setImage] = useState(null);
+  const [imageData, setImageData] = useState(null);
+  const [value, setValue] = useState("");
+  const [response, setResponse] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleFileRead = (event) => {
-    const file = event.target.files[0];
-    setimg(file);
+  const uploadImage = async (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+
     const reader = new FileReader();
-
-    reader.onload = function (e) {
-      setFileContent(e.target.result);
+    reader.onloadend = () => {
+      setImageData(reader.result);
     };
-
-    reader.readAsText(file);
+    reader.readAsDataURL(file);
   };
-  useEffect(() => {
-    if (img) {
-      setans1("loading...");
-      setans2("");
-      setans3("");
-      query(img).then((res) => {
-        console.log(res);
-        setans1(res[0]["label"]);
-        setans2(res[1]["label"]);
-        setans3(res[2]["label"]);
-        // return str;
-      });
-    }
-  }, [img]);
-
-  async function query(fileContent) {
-    const data = fileContent;
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/google/vit-base-patch16-224",
-      {
+  const connecting = async () => {
+    try {
+      const res = await fetch("https://gemini-model-server.onrender.com/", {
+        method: "GET",
         headers: {
-          Authorization: `Bearer hf_${import.meta.env.VITE_HUGGING_FACE_TOKEN}`,
-          "Content-Type": "application/json",
+          "Content-type": "application/json",
         },
-        method: "POST",
-        body: data,
+      });
+      const response = await res.json();
+      if (response.message === "connected") {
+        console.log("Connected to the Server");
       }
-    );
-    const result = await response.json();
-    return result;
-  }
+    } catch (e) {
+      console.log("Server Connection Failed");
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    if (image && image.size > 5 * 1024 * 1024) {
+      alert(`Image size too large. Maximum allowed size is ${5}MB.`);
+      return;
+    }
+    connecting();
+  }, [image]);
+
+  const analyzeImage = async () => {
+    if (!image) {
+      setError("Image must be Selected First");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setResponse((prev) => [...prev, `Qes:${value}`]);
+      const options = {
+        method: "POST",
+        body: JSON.stringify({
+          message: value,
+          image: imageData,
+        }),
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+
+      const response = await fetch(
+        "https://gemini-model-server.onrender.com/gemini",
+        options
+      );
+      const data = await response.text();
+      setResponse((prev) => [...prev, `Ans:${data}`]);
+    } catch (error) {
+      console.error(error);
+      setError("Something went Wrong!!!");
+    }
+    setLoading(false);
+  };
+
+  const clear = () => {
+    setImage(null);
+    setImageData(null);
+    setValue("");
+    setResponse("");
+    setError("");
+  };
+
+  // Function to handle Enter key press
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      analyzeImage();
+    }
+  };
 
   return (
     <>
-      <input type="file" onChange={handleFileRead} />
-      {img ? (
-        <>
-          <h6>{ans1}</h6>
-          <h6>{ans2}</h6>
-          <h6>{ans3}</h6>
-          <img
-            src={URL.createObjectURL(img)}
-            alt="Uploaded image"
-            style={{
-              width: "300px",
-              borderRadius: "10px",
-              border: "2px solid #000",
-            }}
-          />
-        </>
-      ) : (
-        <p>No image uploaded</p>
-      )}
+      <div className="app ">
+        <div className="text-center  top-0 bg-white rounded-b-md">
+          <h1 className="p-1 text-3xl font-bold font-sans-serif">
+            Conversational Image Recognization ChatBot
+          </h1>
+        </div>
+        <section className="flex flex-col mt-1 gap-1 md:flex-row md:flex-nowrap sm:flex-row sm:flex-wrap  lg:flex-row lg:flex-nowrap">
+          {/* <div className="max-h-[90%] w-[38%]"> */}
+          <div
+            className=" shadow-lg h-[80vh] lg:w-[42vw] lg:h-[92vh]  border-2  bg-white border-gray-600 flex flex-col 
+                gap-4 p-4 rounded-xl
+                border-[#00095]  hover:shadow-xl hover:border-gray-900 hover:border-3
+                transition ease-out sm:w-[90vw] sm:h-[92vh] md:w-[45vw] md:h-[92vh]"
+          >
+            <div className="max-h-[88%] min-h-[88%]   min-w-full bg-white rounded-md">
+              <img
+                className="h-full w-full rounded-md"
+                src={image ? URL.createObjectURL(image) : sampleImage}
+                alt="Image uploaded by the user"
+              />
+            </div>
+            <div className="border-black border-2">
+              <div className="rounded-md  imageInput text-center bg-white  ">
+                <label htmlFor="files" className="text-[#342f2f]">
+                  <span className="font-semibold">Upload an Image :</span>
+                  <span className="p-1 pl-6 pr-6 h-full  border-2 rounded-md text-white cursor-pointer bg-[#121212]">
+                    Upload Here
+                  </span>
+                </label>
+                <input
+                  onChange={uploadImage}
+                  id="files"
+                  accept="image/*"
+                  type="file"
+                  className="w-[40%]"
+                  hidden
+                ></input>
+              </div>
+            </div>
+            {/* </div> */}
+          </div>
+          {/* </div> */}
+
+          <div
+            className=" shadow-lg lg:w-[58vw] h-[92vh] border-2  bg-white border-black flex flex-col 
+            gap-4 p-4 rounded-xl   ease-out sm:w-[90vw] sm:h-[92vh] md:w-[45vw]"
+          >
+            <div className="max-h-[88%] min-h-[88%] w-full overflow-auto rounded-md relative">
+              {loading ? (
+                <BounceLoader
+                  color="#121212"
+                  speedMultiplier={1}
+                  size={70}
+                  className="absolute top-[46%] left-[46%]"
+                />
+              ) : (
+                response.map(function (data) {
+                  return (
+                    <div
+                      className={
+                        data ? "answer overflow-y-auto text-black" : ""
+                      }
+                      key={data.id}
+                    >
+                      <ReactMarkdown children={`${data ? data : ""}`} />
+                    </div>
+                  );
+                })
+              )}
+              {error && <p className="answer">{error}</p>}
+            </div>
+
+            <div className="text-[#121212] ">
+              <div className="relative ">
+                What do you want to know about the image?
+                {/* <div className="relative w-full "> */}
+                {/* </div> */}
+              </div>
+              {/* <div> */}
+              {/* <div className=" "> */}
+              <div className="input-container">
+                <input
+                  value={value}
+                  placeholder="What is in the image..."
+                  onChange={(e) => {
+                    setValue(e.target.value);
+                  }}
+                  onKeyDown={handleKeyDown} // Add onKeyDown event listener
+                  className="max-w-[87.5%]"
+                />
+                <div className="relative w-[2.5%] cross bg-[#FFFF]">
+                  <span
+                    className="absolute top-[28%] right-[15%]"
+                    onClick={() => {
+                      setValue("");
+                    }}
+                  >
+                    <RxCrossCircled
+                      size={18}
+                      className="text-slate-400 hover:text-[#484747]"
+                    />
+                  </span>
+                </div>
+                {!error && (
+                  <button onClick={analyzeImage} className="text-[#403b3b]">
+                    Ask Me
+                  </button>
+                )}
+                {error && <button onClick={clear}>Reset</button>}
+              </div>
+              {/* </div> */}
+              {/* </div> */}
+            </div>
+          </div>
+        </section>
+      </div>
     </>
   );
 }
