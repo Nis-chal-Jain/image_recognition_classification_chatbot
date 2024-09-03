@@ -102,11 +102,10 @@ function App() {
       <div className="app ">
         <div className="text-center  top-0 bg-white rounded-b-md">
           <h1 className="p-1 text-3xl font-bold font-sans-serif">
-            Conversational Image Recognization ChatBot
+            Conversational and Image Recognization ChatBot
           </h1>
         </div>
         <section className="flex flex-col mt-1 gap-1 md:flex-row md:flex-nowrap sm:flex-row sm:flex-wrap  lg:flex-row lg:flex-nowrap">
-          {/* <div className="max-h-[90%] w-[38%]"> */}
           <div
             className=" shadow-lg h-[80vh] lg:w-[42vw] lg:h-[92vh]  border-2  bg-white border-gray-600 flex flex-col 
                 gap-4 p-4 rounded-xl
@@ -138,9 +137,7 @@ function App() {
                 ></input>
               </div>
             </div>
-            {/* </div> */}
           </div>
-          {/* </div> */}
 
           <div
             className=" shadow-lg lg:w-[58vw] h-[92vh] border-2  bg-white border-black flex flex-col 
@@ -174,8 +171,6 @@ function App() {
             <div className="text-[#121212] ">
               <div className="relative ">
                 What do you want to know about the image?
-                {/* <div className="relative w-full "> */}
-                {/* </div> */}
               </div>
               {/* <div> */}
               {/* <div className=" "> */}
@@ -210,7 +205,9 @@ function App() {
                     Send
                   </button>
                 )}
-                {error && <button onClick={window.location.reload}>Reset</button>}
+                {error && (
+                  <button onClick={window.location.reload}>Reset</button>
+                )}
               </div>
               {/* </div> */}
               {/* </div> */}
