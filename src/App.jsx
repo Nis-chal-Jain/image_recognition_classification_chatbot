@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import sampleImage from "./image.jpg";
+import sampleImage from "./image.png";
 import { RxCrossCircled } from "react-icons/rx";
 import ReactMarkdown from "react-markdown";
 import { BounceLoader } from "react-spinners";
@@ -74,7 +74,7 @@ function App() {
       );
       const data = await response.text();
       setResponse((prev) => [...prev, `Ans: ${data}`]);
-      setValue("")
+      setValue("");
     } catch (error) {
       console.error(error);
       setError("Something went Wrong!!!");
@@ -113,9 +113,9 @@ function App() {
                 border-[#00095]  hover:shadow-xl hover:border-gray-900 hover:border-3
                 transition ease-out sm:w-[90vw] sm:h-[92vh] md:w-[45vw] md:h-[92vh]"
           >
-            <div className="max-h-[88%] min-h-[88%]   min-w-full bg-white rounded-md">
+            <div className="max-h-[88%] min-h-[88%] flex self-center  min-w-full bg-white rounded-md">
               <img
-                className="h-full w-full rounded-md"
+                className="w-fit max-h-[78vh] m-auto rounded-md "
                 src={image ? URL.createObjectURL(image) : sampleImage}
                 alt="Image uploaded by the user"
               />
@@ -179,7 +179,7 @@ function App() {
               </div>
               {/* <div> */}
               {/* <div className=" "> */}
-              <div className="input-container">
+              <div className="input-container border-2 border-black">
                 <input
                   value={value}
                   placeholder="What is in the image..."
@@ -203,11 +203,14 @@ function App() {
                   </span>
                 </div>
                 {!error && (
-                  <button onClick={analyzeImage} className="text-[#403b3b]">
-                    Ask Me
+                  <button
+                    onClick={analyzeImage}
+                    class="bg-black hover:bg-gray-100 text-white font-semibold hover:text-black py-2 px-4 border-2 border-blue-500 hover:border-transparent rounded"
+                  >
+                    Send
                   </button>
                 )}
-                {error && <button onClick={clear}>Reset</button>}
+                {error && <button onClick={window.location.reload}>Reset</button>}
               </div>
               {/* </div> */}
               {/* </div> */}
