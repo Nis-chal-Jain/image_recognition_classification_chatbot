@@ -1,8 +1,10 @@
+import 'regenerator-runtime'
 import React, { useState, useEffect } from "react";
 import sampleImage from "./image.png";
 import { RxCrossCircled } from "react-icons/rx";
 import ReactMarkdown from "react-markdown";
 import { BounceLoader } from "react-spinners";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 
 function App() {
   const [image, setImage] = useState(null);
@@ -11,6 +13,12 @@ function App() {
   const [response, setResponse] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const {
+    transcript,
+    listening,
+    resetTranscript
+  } = useSpeechRecognition();
 
   const uploadImage = async (e) => {
     const file = e.target.files[0];
@@ -47,6 +55,16 @@ function App() {
     }
     connecting();
   }, [image]);
+
+  useEffect(() => {
+    setValue(transcript)
+  }, [transcript])
+  useEffect(() => {
+    if (!listening && transcript) {
+      setValue(transcript)
+      analyzeImage()
+    }
+  }, [transcript, listening])
 
   const analyzeImage = async () => {
     if (!image) {
@@ -100,6 +118,11 @@ function App() {
   return (
     <>
       <div className="app ">
+        <p>Microphone: {listening ? 'on' : 'off'}</p>
+        <button onClick={SpeechRecognition.startListening}>Start</button>
+        <button onClick={SpeechRecognition.stopListening}>Stop</button>
+        <button onClick={resetTranscript}>Reset</button>
+        <p>{transcript}</p>
         <div className="text-center  top-0 bg-white rounded-b-md">
           <h1 className="p-1 text-3xl font-bold font-sans-serif">
             Conversational and Image Recognization ChatBot
@@ -198,12 +221,18 @@ function App() {
                   </span>
                 </div>
                 {!error && (
-                  <button
-                    onClick={analyzeImage}
-                    class="bg-black hover:bg-gray-100 text-white font-semibold hover:text-black py-2 px-4 border-2 border-blue-500 hover:border-transparent rounded"
-                  >
-                    Send
-                  </button>
+                  <>
+                    <button
+                      onClick={analyzeImage}
+                      class="bg-black hover:bg-gray-100 text-white font-semibold hover:text-black py-2 px-4 border-2 border-blue-500 hover:border-transparent rounded"
+                    >
+                      Send
+                    </button>
+                    if(listening){
+                      <Start />
+                    }
+                    <Mic />
+                  </>
                 )}
                 {error && (
                   <button onClick={window.location.reload}>Reset</button>
@@ -211,12 +240,24 @@ function App() {
               </div>
               {/* </div> */}
               {/* </div> */}
+
             </div>
           </div>
         </section>
       </div>
     </>
   );
+}
+function Mic() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="33" height="33" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16">
+      <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z" />
+      <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5" />
+    </svg>
+  )
+}
+function Start() {
+  return (<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3C2 2.44772 2.44772 2 3 2H12C12.5523 2 13 2.44772 13 3V12C13 12.5523 12.5523 13 12 13H3C2.44772 13 2 12.5523 2 12V3ZM12 3H3V12H12V3Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>)
 }
 
 export default App;
