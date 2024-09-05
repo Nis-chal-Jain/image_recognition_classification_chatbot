@@ -89,6 +89,9 @@ function App() {
         options
       );
       const data = await response.text();
+      const speechsyn = window.speechSynthesis
+      const utter = new SpeechSynthesisUtterance(data)
+      speechsyn.speak(utter)
       setResponse((prev) => [...prev, `Ans: ${data}`]);
       setValue("");
       resetTranscript();
