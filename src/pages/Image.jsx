@@ -81,7 +81,7 @@ function Image() {
           image: imageData,
         }),
         headers: {
-          "Content-type": "Imagelication/json",
+          "Content-type": "application/json",
         },
       };
 
@@ -145,9 +145,11 @@ function Image() {
             </div>
             <div className="border-black border-2 ">
               <div className="rounded-md  imageInput text-center bg-white  ">
+              <label htmlFor="files" className="text-[#342f2f]">
                   <span className="p-1 pl-5 pr-6 h-full  border-2 rounded-md text-white cursor-pointer bg-[#121212]">
                     Upload Image
                   </span>
+                  </label>
                 <input
                   onChange={uploadImage}
                   id="files"
