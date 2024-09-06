@@ -15,6 +15,7 @@ function App() {
   const [response, setResponse] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [usingvoice, setUsingvoice] = useState(false);
 
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
@@ -89,9 +90,12 @@ function App() {
         options
       );
       const data = await response.text();
-      const speechsyn = window.speechSynthesis
-      const utter = new SpeechSynthesisUtterance(data)
-      speechsyn.speak(utter)
+      if (usingvoice) {
+        const speechsyn = window.speechSynthesis;
+        const utter = new SpeechSynthesisUtterance(data);
+        speechsyn.speak(utter);
+        setUsingvoice(false);
+      }
       setResponse((prev) => [...prev, `Ans: ${data}`]);
       setValue("");
       resetTranscript();
@@ -139,20 +143,17 @@ function App() {
                 alt="Image uploaded by the user"
               />
             </div>
-            <div className="border-black border-2">
+            <div className="border-black border-2 ">
               <div className="rounded-md  imageInput text-center bg-white  ">
-                <label htmlFor="files" className="text-[#342f2f]">
-                  <span className="font-semibold">Upload an Image :</span>
-                  <span className="p-1 pl-6 pr-6 h-full  border-2 rounded-md text-white cursor-pointer bg-[#121212]">
-                    Upload Here
+                  <span className="p-1 pl-5 pr-6 h-full  border-2 rounded-md text-white cursor-pointer bg-[#121212]">
+                    Upload Image
                   </span>
-                </label>
                 <input
                   onChange={uploadImage}
                   id="files"
                   accept="image/*"
                   type="file"
-                  className="w-[40%]"
+                  className="w-[90%]"
                   hidden
                 ></input>
               </div>
@@ -221,16 +222,19 @@ function App() {
                   <>
                     <button
                       onClick={analyzeImage}
-                      class="bg-black hover:bg-gray-100 text-white font-semibold hover:text-black py-2 px-4 border-2 border-blue-500 hover:border-transparent rounded"
+                      className="bg-black hover:bg-gray-100 text-white font-semibold hover:text-black py-2 px-4 border-2 border-blue-500 hover:border-transparent rounded"
                     >
                       Send
                     </button>
                     <div
-                      onClick={
-                        listening
-                          ? SpeechRecognition.stopListening
-                          : SpeechRecognition.startListening
-                      }
+                      onClick={() => {
+                        if (listening) {
+                          SpeechRecognition.stopListening();
+                        } else {
+                          setUsingvoice(true);
+                          SpeechRecognition.startListening();
+                        }
+                      }}
                       className="my-auto cursor-pointer"
                     >
                       {listening ? <Start /> : <Mic />}
