@@ -1,4 +1,5 @@
 import "regenerator-runtime";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import React, { useState, useEffect } from "react";
 import sampleImage from "./image.png";
 import { RxCrossCircled } from "react-icons/rx";
@@ -10,6 +11,7 @@ import SpeechRecognition, {
 
 function App() {
   const [image, setImage] = useState(null);
+  const [imagetype, setImagetype] = useState(null);
   const [imageData, setImageData] = useState(null);
   const [value, setValue] = useState("");
   const [response, setResponse] = useState([]);
@@ -18,41 +20,29 @@ function App() {
   const [usingvoice, setUsingvoice] = useState(false);
 
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
-
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const uploadImage = async (e) => {
     const file = e.target.files[0];
     setImage(file);
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImageData(reader.result);
-    };
-    reader.readAsDataURL(file);
+    const imageType = file.type;
+    setImagetype(imageType);
+    const imagebase64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        const base64string = reader.result.split(",")[1];
+        resolve(base64string);
+      };
+      reader.onerror = reject;
+    });
+    setImageData(imagebase64);
   };
-  const connecting = async () => {
-    try {
-      const res = await fetch("https://gemini-model-server.onrender.com/", {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json",
-        },
-      });
-      const response = await res.json();
-      if (response.message === "connected") {
-        console.log("Connected to the Server");
-      }
-    } catch (e) {
-      console.log("Server Connection Failed");
-      console.log(e);
-    }
-  };
-
   useEffect(() => {
     if (image && image.size > 5 * 1024 * 1024) {
       alert(`Image size too large. Maximum allowed size is ${5}MB.`);
       return;
     }
-    connecting();
   }, [image]);
 
   useEffect(() => {
@@ -74,22 +64,16 @@ function App() {
     try {
       setLoading(true);
       setResponse((prev) => [...prev, `Qes: ${value}`]);
-      const options = {
-        method: "POST",
-        body: JSON.stringify({
-          message: value,
-          image: imageData,
-        }),
-        headers: {
-          "Content-type": "application/json",
+      console.log(imageData);
+      const image = {
+        inlineData: {
+          data: imageData,
+          mimeType: imagetype,
         },
       };
-
-      const response = await fetch(
-        "https://gemini-model-server.onrender.com/gemini",
-        options
-      );
-      const data = await response.text();
+      const response = await model.generateContent([value, image]);
+      console.log(response);
+      const data = await response.response.text();
       if (usingvoice) {
         const speechsyn = window.speechSynthesis;
         const utter = new SpeechSynthesisUtterance(data);
@@ -104,14 +88,6 @@ function App() {
       setError("Something went Wrong!!!");
     }
     setLoading(false);
-  };
-
-  const clear = () => {
-    setImage(null);
-    setImageData(null);
-    setValue("");
-    setResponse("");
-    setError("");
   };
 
   // Function to handle Enter key press
@@ -195,8 +171,6 @@ function App() {
               <div className="relative ">
                 What do you want to know about the image?
               </div>
-              {/* <div> */}
-              {/* <div className=" "> */}
               <div className="input-container border-2 border-black">
                 <input
                   value={value}
@@ -247,8 +221,6 @@ function App() {
                   <button onClick={window.location.reload}>Reset</button>
                 )}
               </div>
-              {/* </div> */}
-              {/* </div> */}
             </div>
           </div>
         </section>
