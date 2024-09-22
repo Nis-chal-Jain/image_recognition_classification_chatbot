@@ -64,7 +64,6 @@ function App() {
     try {
       setLoading(true);
       setResponse((prev) => [...prev, `Qes: ${value}`]);
-      console.log(imageData);
       const image = {
         inlineData: {
           data: imageData,
@@ -72,7 +71,6 @@ function App() {
         },
       };
       const response = await model.generateContent([value, image]);
-      console.log(response);
       const data = await response.response.text();
       if (usingvoice) {
         const speechsyn = window.speechSynthesis;
