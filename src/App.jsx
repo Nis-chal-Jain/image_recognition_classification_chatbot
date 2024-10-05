@@ -32,7 +32,7 @@ function App() {
     scrollToBottom();
   }, [response]);
   const handleSubmit = async () => {
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbyQibEbs0X13InqZb7PPf064kCkC_ZhNudP_nu0Tyyb5m1fNW2TNobqsY4ZMKKh3WZSYg/exec"; 
+    const webAppUrl = import.meta.env.VITE_API_SHEET_ID; 
 
     try {
       const response = await fetch(webAppUrl, {
