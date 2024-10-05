@@ -1,6 +1,6 @@
 import "regenerator-runtime";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import sampleImage from "./image.png";
 import { RxCrossCircled } from "react-icons/rx";
 import ReactMarkdown from "react-markdown";
@@ -22,6 +22,16 @@ function App() {
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [response]);
+
   const uploadImage = async (e) => {
     const file = e.target.files[0];
     setImage(file);
@@ -162,6 +172,7 @@ function App() {
                   );
                 })
               )}
+              <div ref={messagesEndRef} />
               {error && <p className="answer">{error}</p>}
             </div>
 
