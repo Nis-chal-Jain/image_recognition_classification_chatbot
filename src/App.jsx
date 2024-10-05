@@ -32,7 +32,7 @@ function App() {
     scrollToBottom();
   }, [response]);
   const handleSubmit = async () => {
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbyTstYftRlE-EwWsGtG0oVZsuOwvLUCArBGDGpVCsGDQBDNj7qJw7SCHszK5DAnNJG6/exec"; // Replace with your actual web app URL
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbyQibEbs0X13InqZb7PPf064kCkC_ZhNudP_nu0Tyyb5m1fNW2TNobqsY4ZMKKh3WZSYg/exec"; 
 
     try {
       const response = await fetch(webAppUrl, {
