@@ -31,6 +31,29 @@ function App() {
   useEffect(() => {
     scrollToBottom();
   }, [response]);
+  const handleSubmit = async () => {
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbyTstYftRlE-EwWsGtG0oVZsuOwvLUCArBGDGpVCsGDQBDNj7qJw7SCHszK5DAnNJG6/exec"; // Replace with your actual web app URL
+
+    try {
+      const response = await fetch(webAppUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: value }),
+        mode: "no-cors",
+      });
+
+      const result = await response.json();
+      if (result.status === "success") {
+        alert("Data sent successfully!");
+      } else {
+        alert("Failed to send data.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const uploadImage = async (e) => {
     const file = e.target.files[0];
@@ -74,6 +97,7 @@ function App() {
     try {
       setLoading(true);
       setResponse((prev) => [...prev, `Qes: ${value}`]);
+      handleSubmit()
       const image = {
         inlineData: {
           data: imageData,
