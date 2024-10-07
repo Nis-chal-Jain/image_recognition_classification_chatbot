@@ -8,6 +8,7 @@ import { BounceLoader } from "react-spinners";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
+import ButtonGroup from "./components/ButtonGroup";
 
 function App() {
   const [image, setImage] = useState(null);
@@ -32,7 +33,7 @@ function App() {
     scrollToBottom();
   }, [response]);
   const handleSubmit = async () => {
-    const webAppUrl = import.meta.env.VITE_API_SHEET_ID; 
+    const webAppUrl = import.meta.env.VITE_API_SHEET_ID;
 
     try {
       const response = await fetch(webAppUrl, {
@@ -97,7 +98,7 @@ function App() {
     try {
       setLoading(true);
       setResponse((prev) => [...prev, `Qes: ${value}`]);
-      handleSubmit()
+      handleSubmit();
       const image = {
         inlineData: {
           data: imageData,
@@ -199,7 +200,9 @@ function App() {
               <div ref={messagesEndRef} />
               {error && <p className="answer">{error}</p>}
             </div>
-
+            <div className="mt-[-60px] mb-[-20px]">
+              <ButtonGroup analyzeImage={analyzeImage} setValue={setValue}/>
+            </div>
             <div className="text-[#121212] ">
               <div className="relative ">
                 What do you want to know about the image?
