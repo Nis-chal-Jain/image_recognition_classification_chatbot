@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const ButtonGroup = ({ setValue, analyzeImage }) => {
+const ButtonGroup = ({ setValue, analyzeImage, value }) => {
+  const [varstore, setVarstore] = useState("");
+  useEffect(() => {
+    setValue(varstore);
+  }, [varstore]);
+  useEffect(() => {
+    if (value) analyzeImage();
+  }, [value]);
+
   return (
     <div className="relative">
       <div className="flex items-center space-x-2 overflow-x-scroll scrollbar-hide w-full p-2">
         <button
           className="bg-gray-200 text-gray-700 p-2 rounded-md whitespace-nowrap"
           onClick={() => {
-            setValue("What is in the image?");
-            analyzeImage();
+            setVarstore("What is in the image?");
           }}
         >
           What is in the image?
@@ -16,8 +23,7 @@ const ButtonGroup = ({ setValue, analyzeImage }) => {
         <button
           className="bg-gray-200 text-gray-700 p-2 rounded-md whitespace-nowrap"
           onClick={() => {
-            setValue("Generate Instagram caption for this image short");
-            analyzeImage();
+            setVarstore("Generate Instagram caption for this image short");
           }}
         >
           Generate Instagram caption for this image short
@@ -25,8 +31,7 @@ const ButtonGroup = ({ setValue, analyzeImage }) => {
         <button
           className="bg-gray-200 text-gray-700 p-2 rounded-md whitespace-nowrap"
           onClick={() => {
-            setValue("Solve this question in the image");
-            analyzeImage();
+            setVarstore("Solve this question in the image");
           }}
         >
           Solve this question in the image

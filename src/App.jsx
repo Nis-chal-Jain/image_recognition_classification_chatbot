@@ -201,7 +201,7 @@ function App() {
               {error && <p className="answer">{error}</p>}
             </div>
             <div className="mt-[-60px] mb-[-20px]">
-              <ButtonGroup analyzeImage={analyzeImage} setValue={setValue}/>
+              <ButtonGroup analyzeImage={analyzeImage}value={value} setValue={setValue}/>
             </div>
             <div className="text-[#121212] ">
               <div className="relative ">
