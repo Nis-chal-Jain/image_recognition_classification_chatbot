@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const ButtonGroup = ({ setValue, analyzeImage, value }) => {
+const ButtonGroup = ({ setValue, analyzeImage }) => {
   const [varstore, setVarstore] = useState(null);
   const [changevar, setchangevar] = useState(false);
   const [changeval, setchangeval] = useState(false);
@@ -12,7 +12,9 @@ const ButtonGroup = ({ setValue, analyzeImage, value }) => {
   }, [varstore]);
   useEffect(() => {
     if (changeval && changevar) {
-      analyzeImage(); // Ensure analyzeImage is defined
+      analyzeImage();
+      setchangevar(false);
+      setchangeval(false);
     }
   }, [changeval, changevar]);
 
