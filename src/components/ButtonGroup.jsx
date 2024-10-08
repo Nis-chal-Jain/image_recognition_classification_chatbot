@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
 
 const ButtonGroup = ({ setValue, analyzeImage, value }) => {
-  const [varstore, setVarstore] = useState("");
+  const [varstore, setVarstore] = useState(null);
+  const [changevar, setchangevar] = useState(false);
+  const [changeval, setchangeval] = useState(false);
   useEffect(() => {
+    if (varstore == null) return;
+    setchangevar(true);
     setValue(varstore);
+    setchangeval(true);
   }, [varstore]);
   useEffect(() => {
-    if (value) analyzeImage();
-  }, [value, varstore]);
+    if (changeval && changevar) {
+      analyzeImage(); // Ensure analyzeImage is defined
+    }
+  }, [changeval, changevar]);
 
   return (
     <div className="relative">

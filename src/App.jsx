@@ -190,8 +190,8 @@ function App() {
                   );
                 })
               )}
-              <div ref={messagesEndRef} />
               {error && <p className="answer">{error}</p>}
+              <div ref={messagesEndRef} className="mt-11" />
             </div>
             <div className="mt-[-60px] mb-[-20px]">
               <ButtonGroup
