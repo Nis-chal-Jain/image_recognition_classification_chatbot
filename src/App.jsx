@@ -36,7 +36,7 @@ function App() {
     const webAppUrl = import.meta.env.VITE_API_SHEET_ID;
 
     try {
-      const response = await fetch(webAppUrl, {
+      await fetch(webAppUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,13 +44,6 @@ function App() {
         body: JSON.stringify({ text: value }),
         mode: "no-cors",
       });
-
-      const result = await response.json();
-      if (result.status === "success") {
-        alert("Data sent successfully!");
-      } else {
-        alert("Failed to send data.");
-      }
     } catch (error) {
       console.error("Error:", error);
     }
@@ -201,7 +194,11 @@ function App() {
               {error && <p className="answer">{error}</p>}
             </div>
             <div className="mt-[-60px] mb-[-20px]">
-              <ButtonGroup analyzeImage={analyzeImage}value={value} setValue={setValue}/>
+              <ButtonGroup
+                analyzeImage={analyzeImage}
+                value={value}
+                setValue={setValue}
+              />
             </div>
             <div className="text-[#121212] ">
               <div className="relative ">

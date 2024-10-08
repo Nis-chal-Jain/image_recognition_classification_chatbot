@@ -7,7 +7,7 @@ const ButtonGroup = ({ setValue, analyzeImage, value }) => {
   }, [varstore]);
   useEffect(() => {
     if (value) analyzeImage();
-  }, [value]);
+  }, [value, varstore]);
 
   return (
     <div className="relative">
